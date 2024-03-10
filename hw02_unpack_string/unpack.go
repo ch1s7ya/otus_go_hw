@@ -12,7 +12,7 @@ func Unpack(s string) (string, error) {
 	var resultString strings.Builder
 	var previousLetter rune
 	var count int
-	var skipLetter = '\\'
+	skipLetter := '\\'
 	var skip bool
 
 	if len(s) == 0 {
@@ -26,25 +26,14 @@ func Unpack(s string) (string, error) {
 	for _, letter := range s {
 		var err error
 
-		if previousLetter == 0 && count != 0 {
-			_, err = strconv.Atoi(string(letter))
-			if err == nil {
-				return "", ErrInvalidString
-			}
-		}
-
-		if previousLetter == 0 {
-			_, err = strconv.Atoi(string(letter))
-			if err != nil {
-				previousLetter = letter
-				continue
-			}
-			return "", ErrInvalidString
-		}
-
 		count, err = strconv.Atoi(string(letter))
 		// Current letter is letter
 		if err != nil {
+			if previousLetter == 0 {
+				previousLetter = letter
+				continue
+			}
+
 			if skip && letter != skipLetter {
 				return "", ErrInvalidString
 			}
@@ -63,15 +52,17 @@ func Unpack(s string) (string, error) {
 				return "", ErrInvalidString
 			}
 			previousLetter = letter
-			count = 0
 			continue
 		}
 
 		// Current letter is number
+		if previousLetter == 0 {
+			return "", ErrInvalidString
+		}
+
 		if skip {
 			previousLetter = letter
 			skip = false
-			count = 0
 			continue
 		}
 		_, err = resultString.WriteString(strings.Repeat(string(previousLetter), count))

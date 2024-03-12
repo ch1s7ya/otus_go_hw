@@ -19,11 +19,7 @@ func Unpack(s string) (string, error) {
 		return "", nil
 	}
 
-	if _, err := strconv.Atoi(string(s[0])); err == nil {
-		return "", ErrInvalidString
-	}
-
-	for _, letter := range s {
+	for i, letter := range s {
 		var err error
 
 		count, err = strconv.Atoi(string(letter))
@@ -56,6 +52,10 @@ func Unpack(s string) (string, error) {
 		}
 
 		// Current letter is number
+		if i == 0 {
+			return "", ErrInvalidString
+		}
+
 		if previousLetter == 0 {
 			return "", ErrInvalidString
 		}

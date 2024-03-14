@@ -19,41 +19,41 @@ func Unpack(s string) (string, error) {
 		return "", nil
 	}
 
-	for i, letter := range s {
+	// Return err if last symbol equal `\`
+	if s[len(s)-1] == byte(skipLetter) {
+		return "", ErrInvalidString
+	}
+
+	for _, letter := range s {
 		var err error
 
 		count, err = strconv.Atoi(string(letter))
 		// Current letter is letter
 		if err != nil {
-			if previousLetter == 0 {
+			switch {
+			case previousLetter == 0:
 				previousLetter = letter
 				continue
-			}
 
-			if skip && letter != skipLetter {
+			case skip && letter != skipLetter:
 				return "", ErrInvalidString
-			}
 
-			if skip && letter == skipLetter {
+			case skip && letter == skipLetter:
 				previousLetter = skipLetter
 				skip = false
 				continue
-			}
 
-			if letter == skipLetter {
+			case letter == skipLetter:
 				skip = true
 			}
+
 			_, err := resultString.WriteRune(previousLetter)
 			if err != nil {
 				return "", ErrInvalidString
 			}
+
 			previousLetter = letter
 			continue
-		}
-
-		// Current letter is number
-		if i == 0 {
-			return "", ErrInvalidString
 		}
 
 		if previousLetter == 0 {
@@ -65,10 +65,12 @@ func Unpack(s string) (string, error) {
 			skip = false
 			continue
 		}
+
 		_, err = resultString.WriteString(strings.Repeat(string(previousLetter), count))
 		if err != nil {
 			return "", ErrInvalidString
 		}
+
 		previousLetter = 0
 	}
 

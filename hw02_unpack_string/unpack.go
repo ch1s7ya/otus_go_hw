@@ -20,9 +20,9 @@ func Unpack(s string) (string, error) {
 	}
 
 	// Return err if last symbol equal `\`
-	if s[len(s)-1] == byte(skipLetter) {
-		return "", ErrInvalidString
-	}
+	// if s[len(s)-1] == byte(skipLetter) {
+	// 	return "", ErrInvalidString
+	// }
 
 	for _, letter := range s {
 		var err error
@@ -79,6 +79,10 @@ func Unpack(s string) (string, error) {
 		if err != nil {
 			return "", ErrInvalidString
 		}
+	}
+
+	if skip {
+		return "", ErrInvalidString
 	}
 
 	return resultString.String(), nil

@@ -21,7 +21,7 @@ func Top10(text string) []string {
 	sortedListOfWords := sortWords(frequencyListOfWords)
 	top10FrequentWords := getTop10(sortedListOfWords)
 
-	var frequentWords []string
+	frequentWords := make([]string, 0, 10)
 	for _, word := range top10FrequentWords {
 		frequentWords = append(frequentWords, word.Word)
 	}
@@ -45,13 +45,13 @@ func buildFrequencyListOfWords(words []string) map[string]int {
 func getTop10(words []WordFrequency) []WordFrequency {
 	if len(words) != 0 {
 		return words[0:10]
-	} else {
-		return words
 	}
+
+	return words
 }
 
 func sortWords(words map[string]int) []WordFrequency {
-	var sortedWords []WordFrequency
+	sortedWords := make([]WordFrequency, 0)
 
 	for k, v := range words {
 		sortedWords = append(sortedWords, WordFrequency{k, v})

@@ -1,6 +1,7 @@
 package hw03frequencyanalysis
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -79,4 +80,128 @@ func TestTop10(t *testing.T) {
 			require.Equal(t, expected, Top10(text))
 		}
 	})
+}
+
+func TestGetTop10(t *testing.T) {
+	type args struct {
+		words []WordFrequency
+	}
+	tests := []struct {
+		name string
+		args args
+		want []WordFrequency
+	}{
+		{
+			name: "Small slice",
+			args: args{
+				words: []WordFrequency{
+					{
+						Word:  "hello",
+						Count: 1,
+					},
+					{
+						Word:  "world",
+						Count: 1,
+					},
+				},
+			},
+			want: []WordFrequency{
+				{
+					Word:  "hello",
+					Count: 1,
+				},
+				{
+					Word:  "world",
+					Count: 1,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getTop10(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getTop10() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_buildFrequencyListOfWords(t *testing.T) {
+	type args struct {
+		words []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string]int
+	}{
+		{
+			name: "Regular words",
+			args: args{
+				words: []string{"bite", "my", "shiny", "metal", "ass"},
+			},
+			want: map[string]int{"bite": 1, "my": 1, "shiny": 1, "metal": 1, "ass": 1},
+		},
+		{
+			name: "The same number of words",
+			args: args{
+				words: []string{"shut", "up", "and", "and", "money", "take", "my", "money"},
+			},
+			want: map[string]int{"shut": 1, "up": 1, "and": 2, "take": 1, "my": 1, "money": 2},
+		},
+		{
+			name: "Empty text",
+			args: args{
+				words: []string{},
+			},
+			want: map[string]int{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := buildFrequencyListOfWords(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("buildFrequencyListOfWords() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_toLowerAndTrim(t *testing.T) {
+	type args struct {
+		words []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "Empty array",
+			args: args{
+				words: []string{},
+			},
+			want: nil,
+		},
+		{
+			name: "Regular words",
+			args: args{
+				words: []string{"Shut", "up", "and", "take", "my", "money!"},
+			},
+			want: []string{"shut", "up", "and", "take", "my", "money"},
+		},
+		{
+			name: "Strange words",
+			args: args{
+				words: []string{"-------", "-", "dog,cat", "dog...cat", "dogcat"},
+			},
+			want: []string{"-------", "dog,cat", "dog...cat", "dogcat"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := toLowerAndTrim(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("toLowerAndTrim() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

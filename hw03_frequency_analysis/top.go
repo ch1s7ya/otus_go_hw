@@ -32,18 +32,13 @@ func Top10(text string) []string {
 func buildFrequencyListOfWords(words []string) map[string]int {
 	frequenceListOfWords := make(map[string]int)
 	for _, word := range words {
-		_, ok := frequenceListOfWords[word]
-		if ok {
-			frequenceListOfWords[word]++
-		} else {
-			frequenceListOfWords[word] = 1
-		}
+		frequenceListOfWords[word]++
 	}
 	return frequenceListOfWords
 }
 
 func getTop10(words []WordFrequency) []WordFrequency {
-	if len(words) != 0 {
+	if len(words) >= 10 {
 		return words[0:10]
 	}
 

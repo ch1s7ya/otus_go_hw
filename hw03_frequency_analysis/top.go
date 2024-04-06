@@ -2,15 +2,18 @@ package hw03frequencyanalysis
 
 import (
 	"cmp"
+	"regexp"
 	"slices"
 	"strings"
-	"unicode"
 )
 
 type WordFrequency struct {
 	Word  string
 	Count int
 }
+
+var reLeft = regexp.MustCompile(`[[:punct:]]+$`)
+var reRight = regexp.MustCompile(`^[[:punct:]]+`)
 
 func Top10(text string) []string {
 	words := strings.Fields(text)
@@ -66,12 +69,14 @@ func toLowerAndTrim(words []string) []string {
 	var lowerCaseWords []string
 
 	for _, word := range words {
-		word = strings.ToLower(strings.TrimFunc(word, func(r rune) bool {
-			return !unicode.IsLetter(r) && !unicode.IsNumber(r)
-		}))
-
-		if word != "" {
+		if len(word) < 2 {
+			continue
+		}
+		pureWord := strings.ToLower(reRight.ReplaceAllString(reLeft.ReplaceAllString(word, ""), ""))
+		if len(pureWord) == 0 {
 			lowerCaseWords = append(lowerCaseWords, word)
+		} else {
+			lowerCaseWords = append(lowerCaseWords, pureWord)
 		}
 	}
 

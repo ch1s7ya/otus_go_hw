@@ -126,7 +126,7 @@ func TestGetTop10(t *testing.T) {
 	}
 }
 
-func Test_buildFrequencyListOfWords(t *testing.T) {
+func TestBuildFrequencyListOfWords(t *testing.T) {
 	type args struct {
 		words []string
 	}
@@ -166,7 +166,7 @@ func Test_buildFrequencyListOfWords(t *testing.T) {
 	}
 }
 
-func Test_toLowerAndTrim(t *testing.T) {
+func TestToLowerAndTrim(t *testing.T) {
 	type args struct {
 		words []string
 	}
@@ -201,6 +201,69 @@ func Test_toLowerAndTrim(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := toLowerAndTrim(tt.args.words); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("toLowerAndTrim() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_sortWords(t *testing.T) {
+	type args struct {
+		words map[string]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []WordFrequency
+	}{
+		{
+			name: "Sort words",
+			args: args{
+				words: map[string]int{"my": 1, "park": 4, "theme": 3, "own": 2},
+			},
+			want: []WordFrequency{
+				{
+					Word:  "park",
+					Count: 4,
+				},
+				{
+					Word:  "theme",
+					Count: 3,
+				},
+				{
+					Word:  "own",
+					Count: 2,
+				},
+				{
+					Word:  "my",
+					Count: 1,
+				},
+			},
+		},
+		{
+			name: "Sorting the same number of words",
+			args: args{
+				words: map[string]int{"good": 1, "news": 2, "everyone": 2},
+			},
+			want: []WordFrequency{
+				{
+					Word:  "everyone",
+					Count: 2,
+				},
+				{
+					Word:  "news",
+					Count: 2,
+				},
+				{
+					Word:  "good",
+					Count: 1,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := sortWords(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("sortWords() = %v, want %v", got, tt.want)
 			}
 		})
 	}

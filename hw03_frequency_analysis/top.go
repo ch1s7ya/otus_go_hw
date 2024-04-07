@@ -12,8 +12,10 @@ type WordFrequency struct {
 	Count int
 }
 
-var reLeft = regexp.MustCompile(`[[:punct:]]+$`)
-var reRight = regexp.MustCompile(`^[[:punct:]]+`)
+var (
+	reLeft  = regexp.MustCompile(`[[:punct:]]+$`)
+	reRight = regexp.MustCompile(`^[[:punct:]]+`)
+)
 
 func Top10(text string) []string {
 	words := strings.Fields(text)

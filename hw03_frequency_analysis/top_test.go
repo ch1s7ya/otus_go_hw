@@ -1,13 +1,14 @@
 package hw03frequencyanalysis
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 // Change to true if needed.
-var taskWithAsteriskIsCompleted = false
+var taskWithAsteriskIsCompleted = true
 
 var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
@@ -79,4 +80,191 @@ func TestTop10(t *testing.T) {
 			require.Equal(t, expected, Top10(text))
 		}
 	})
+}
+
+func TestGetTop10(t *testing.T) {
+	type args struct {
+		words []WordFrequency
+	}
+	tests := []struct {
+		name string
+		args args
+		want []WordFrequency
+	}{
+		{
+			name: "Small slice",
+			args: args{
+				words: []WordFrequency{
+					{
+						Word:  "hello",
+						Count: 1,
+					},
+					{
+						Word:  "world",
+						Count: 1,
+					},
+				},
+			},
+			want: []WordFrequency{
+				{
+					Word:  "hello",
+					Count: 1,
+				},
+				{
+					Word:  "world",
+					Count: 1,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getTop10(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getTop10() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBuildFrequencyListOfWords(t *testing.T) {
+	type args struct {
+		words []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want map[string]int
+	}{
+		{
+			name: "Regular words",
+			args: args{
+				words: []string{"bite", "my", "shiny", "metal", "ass"},
+			},
+			want: map[string]int{"bite": 1, "my": 1, "shiny": 1, "metal": 1, "ass": 1},
+		},
+		{
+			name: "The same number of words",
+			args: args{
+				words: []string{"shut", "up", "and", "and", "money", "take", "my", "money"},
+			},
+			want: map[string]int{"shut": 1, "up": 1, "and": 2, "take": 1, "my": 1, "money": 2},
+		},
+		{
+			name: "Empty text",
+			args: args{
+				words: []string{},
+			},
+			want: map[string]int{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := buildFrequencyListOfWords(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("buildFrequencyListOfWords() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestToLowerAndTrim(t *testing.T) {
+	type args struct {
+		words []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "Empty array",
+			args: args{
+				words: []string{},
+			},
+			want: nil,
+		},
+		{
+			name: "Regular words",
+			args: args{
+				words: []string{"Shut", "up", "and", "take", "my", "money!"},
+			},
+			want: []string{"shut", "up", "and", "take", "my", "money"},
+		},
+		{
+			name: "Strange words",
+			args: args{
+				words: []string{"-------", "-", "dog,cat", "dog...cat", "dogcat"},
+			},
+			want: []string{"-------", "dog,cat", "dog...cat", "dogcat"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := toLowerAndTrim(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("toLowerAndTrim() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_sortWords(t *testing.T) {
+	type args struct {
+		words map[string]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []WordFrequency
+	}{
+		{
+			name: "Sort words",
+			args: args{
+				words: map[string]int{"my": 1, "park": 4, "theme": 3, "own": 2},
+			},
+			want: []WordFrequency{
+				{
+					Word:  "park",
+					Count: 4,
+				},
+				{
+					Word:  "theme",
+					Count: 3,
+				},
+				{
+					Word:  "own",
+					Count: 2,
+				},
+				{
+					Word:  "my",
+					Count: 1,
+				},
+			},
+		},
+		{
+			name: "Sorting the same number of words",
+			args: args{
+				words: map[string]int{"good": 1, "news": 2, "everyone": 2},
+			},
+			want: []WordFrequency{
+				{
+					Word:  "everyone",
+					Count: 2,
+				},
+				{
+					Word:  "news",
+					Count: 2,
+				},
+				{
+					Word:  "good",
+					Count: 1,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := sortWords(tt.args.words); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("sortWords() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -33,13 +33,13 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 		c.queue.MoveToFront(element)
 		element.Value.(*Pair).value = value
 	} else {
-		pair := &Pair{key, value}
-		element = c.queue.PushFront(pair)
-		c.items[key] = element
 		if c.queue.Len() > c.capacity {
 			c.queue.Remove(c.queue.Back())
 			delete(c.items, c.queue.Back().Value.(*Pair).key)
 		}
+		pair := &Pair{key, value}
+		element = c.queue.PushFront(pair)
+		c.items[key] = element
 	}
 	return keyExists
 }

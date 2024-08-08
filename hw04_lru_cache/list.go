@@ -31,16 +31,10 @@ func (l list) Len() int {
 }
 
 func (l list) Front() *ListItem {
-	if l.len == 0 {
-		return nil
-	}
 	return l.front
 }
 
 func (l list) Back() *ListItem {
-	if l.len == 0 {
-		return nil
-	}
 	return l.back
 }
 
@@ -76,8 +70,18 @@ func (l *list) PushBack(v interface{}) *ListItem {
 }
 
 func (l *list) Remove(i *ListItem) {
-	i.Next.Prev = i.Prev
-	i.Prev.Next = i.Next
+	if i.Next != nil {
+		i.Next.Prev = i.Prev
+	} else {
+		l.back = i.Prev
+	}
+
+	if i.Prev != nil {
+		i.Prev.Next = i.Next
+	} else {
+		l.front = i.Next
+	}
+
 	i.Next = nil
 	i.Prev = nil
 	l.len--
@@ -89,6 +93,8 @@ func (l *list) MoveToFront(i *ListItem) {
 	}
 	if i != l.Back() {
 		i.Next.Prev = i.Prev
+	} else {
+		l.back = i.Prev
 	}
 	i.Prev.Next = i.Next
 

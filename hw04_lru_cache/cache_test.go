@@ -62,7 +62,7 @@ func TestCache(t *testing.T) {
 		require.False(t, wasInCache)
 
 		c.Clear()
-		require.Equal(t, 0, c.(*lruCache).capacity)
+		require.Equal(t, 3, c.(*lruCache).capacity)
 		require.Equal(t, &list{}, c.(*lruCache).queue)
 		require.Equal(t, 0, len(c.(*lruCache).items))
 	})

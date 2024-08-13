@@ -55,7 +55,6 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 }
 
 func (c *lruCache) Clear() {
-	c.capacity = 0
 	c.queue = new(list)
 	c.items = make(map[Key]*ListItem, c.capacity)
 }

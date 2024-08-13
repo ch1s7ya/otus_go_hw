@@ -58,7 +58,6 @@ func (l *list) PushBack(v interface{}) *ListItem {
 	if l.back == nil {
 		l.front = e
 		l.back = e
-		l.len++
 	} else {
 		l.back.Next = e
 		e.Next = nil

@@ -50,7 +50,65 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		c := NewCache(3)
+
+		wasInCache := c.Set("farnsworth", 160)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("fry", 1033)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("bender", 4)
+		require.False(t, wasInCache)
+
+		c.Clear()
+		require.Equal(t, 0, c.(*lruCache).capacity)
+		require.Equal(t, &list{}, c.(*lruCache).queue)
+		require.Equal(t, 0, len(c.(*lruCache).items))
+	})
+
+	t.Run("pushing out of the cache", func(t *testing.T) {
+		c := NewCache(3)
+
+		wasInCache := c.Set("farnsworth", 160)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("fry", 1033)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("bender", 4)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("leela", 41)
+		require.False(t, wasInCache)
+
+		require.Equal(t, 3, len(c.(*lruCache).items))
+	})
+
+	t.Run("pushing out long-used elements", func(t *testing.T) {
+		c := NewCache(3)
+
+		wasInCache := c.Set("farnsworth", 160) // [ farnsworth ]
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("fry", 1033) // [ fry, farnsworth ]
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("bender", 4) // [ bender, fry, farnsworth ]
+		require.False(t, wasInCache)
+
+		_, wasInCache = c.Get("fry") // [ fry, bender, farnsworth ]
+		require.True(t, wasInCache)
+
+		wasInCache = c.Set("bender", 1061) // [ bender, fry, farnsworth ]
+		require.True(t, wasInCache)
+
+		wasInCache = c.Set("leela", 41) // [ leela, bender, fry ]
+		require.False(t, wasInCache)
+
+		require.Equal(t, &Pair{key: "leela", value: 41}, c.(*lruCache).queue.Front().Value)
+		require.Equal(t, &Pair{key: "bender", value: 1061}, c.(*lruCache).queue.Front().Next.Value)
+		require.Equal(t, &Pair{key: "fry", value: 1033}, c.(*lruCache).queue.Back().Value)
 	})
 }
 

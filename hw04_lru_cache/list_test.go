@@ -1,6 +1,7 @@
 package hw04lrucache
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,8 @@ func TestList(t *testing.T) {
 		require.Equal(t, 3, l.Len())
 
 		middle := l.Front().Next // 20
-		l.Remove(middle)         // [10, 30]
+		fmt.Println(l.Front().Value, middle.Value, l.Back().Value)
+		l.Remove(middle) // [10, 30]
 		require.Equal(t, 2, l.Len())
 
 		for i, v := range [...]int{40, 50, 60, 70, 80} {
@@ -47,5 +49,45 @@ func TestList(t *testing.T) {
 			elems = append(elems, i.Value.(int))
 		}
 		require.Equal(t, []int{70, 80, 60, 40, 10, 30, 50}, elems)
+
+		l.Remove(l.Front())
+		require.Equal(t, 80, l.Front().Value)
+	})
+}
+
+func TestPushFrontRemove(t *testing.T) {
+	t.Run("remove one front", func(t *testing.T) {
+		l := NewList()
+		l.PushFront(10)     // [10]
+		l.Remove(l.Front()) // []
+
+		require.Equal(t, 0, l.Len())
+		require.Nil(t, l.Front())
+		require.Nil(t, l.Back())
+	})
+}
+
+func TestPushBackRemove(t *testing.T) {
+	t.Run("remove one back", func(t *testing.T) {
+		l := NewList()
+		l.PushBack(10)     // [10]
+		l.Remove(l.Back()) // []
+
+		require.Equal(t, 0, l.Len())
+		require.Nil(t, l.Front())
+		require.Nil(t, l.Back())
+	})
+}
+
+func TestRemove(t *testing.T) {
+	t.Run("remove", func(t *testing.T) {
+		l := NewList()
+		l.PushFront(10) // [10]
+		l.PushBack(20)  // [10, 20]
+
+		l.Remove(l.Front())
+		require.Equal(t, 1, l.Len())
+		require.Equal(t, 20, l.Front().Value)
+		require.Equal(t, 20, l.Back().Value)
 	})
 }
